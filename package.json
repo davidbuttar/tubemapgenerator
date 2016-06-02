@@ -1,0 +1,26 @@
+{
+  "name": "tubemapgenerator",
+  "version": "1.0.0",
+  "description": "Hackathon to create a tool allowing the creation of tube maps.",
+  "main": "index.js",
+  "scripts": {
+  "test": "gulp test",
+  "start": "node index.js",
+  "postinstall": "gulp default"
+  },
+  "dependencies": {
+    "express": "^4.13.4",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidbuttar/tubemapgenerator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidbuttar/tubemapgenerator/issues"
+  },
+  "homepage": "https://github.com/davidbuttar/tubemapgenerator#readme"
+}
