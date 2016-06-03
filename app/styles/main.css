@@ -1,0 +1,9 @@
+#svg {
+    border-radius: 2px;
+    border: solid 2px #ccc;
+    width: 90%;
+    height: 300px;
+    float: left;
+    margin-right: 10px;
+    font: 1em source-sans-pro, Source Sans Pro, Helvetica, sans-serif;
+}
