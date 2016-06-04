@@ -12,15 +12,16 @@ bigCircle.attr({
 var degreeOffset45OnCircle = Math.sqrt(2)/2;
 var degreeOffset45OnCircleLeftOver = 1 - Math.sqrt(2)/2;
 
-function degreeArc45(radius){
+function degreeArc45(radius, sweepFlag){
+    sweepFlag = sweepFlag || 0;
     var y = degreeOffset45OnCircle * radius;
     var x = degreeOffset45OnCircleLeftOver * radius;
-    return 'a '+radius+' '+radius+' 0 0 0 '+x+' '+y;
+    return 'a '+radius+' '+radius+' 0 0 '+sweepFlag+' '+x+' '+y;
 }
 
 //a 10 10 0 0 0 2.92 7.07
 
-var c = s.path("M10 10 l 30 30 l 0 30 l 100 0 a 10 10 90 0 1 10 10 l 0 100 "+degreeArc45(10)+" l 30 30").attr({
+var c = s.path("M10 10 l 30 30 l 0 30 l 100 0 a 10 10 90 0 1 10 10 l 0 100 "+degreeArc45(10)+" l 30 30 "+degreeArc45(10,1)+" l 0 20 a 10 10 90 0 0 10 10 l 20 0 a 10 10 90 0 0 10 -10 l 0 -100 l 5 0 l 0 100 a 15 15 0 0 1 -15 15 l -20 0" ).attr({
     fill: "none",
     stroke: "#bada55",
     strokeWidth: 1
