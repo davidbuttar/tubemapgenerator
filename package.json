@@ -24,10 +24,18 @@
   },
   "homepage": "https://github.com/davidbuttar/tubemapgenerator#readme",
   "devDependencies": {
+    "babelify": "^7.3.0",
     "browserify": "^13.0.1",
     "gulp": "^3.9.1",
+    "gulp-jasmine": "2.3.0",
+    "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
+    "gulp-uglify": "^1.5.3",
+    "gulp-util": "^3.0.7",
+    "jasmine-core": "2.4.1",
     "tsify": "^0.16.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
   }
 }

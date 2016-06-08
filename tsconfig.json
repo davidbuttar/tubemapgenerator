@@ -1,7 +1,6 @@
 {
   "files": [
-    "src/handle45DegreeTurns.ts",
-    "src/main.ts"
+    "src/*.ts"
   ],
   "compilerOptions": {
     "noImplicitAny": true,
