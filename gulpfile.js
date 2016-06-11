@@ -8,13 +8,13 @@ var ts = require("gulp-typescript");
 var jasmine = require('gulp-jasmine');
 
 gulp.task("build-tests", function () {
-    gulp.src('src/**/*.ts')
+    gulp.src(['src/**/*.ts'])
         .pipe(ts({
             noImplicitAny: true
         }))
         .pipe(gulp.dest('testdist/src'));
 
-    return gulp.src('test/**/*.ts')
+    gulp.src(['test/**/*.ts', 'typings/**.ts'])
         .pipe(ts({
             noImplicitAny: true
         }))
@@ -44,4 +44,8 @@ gulp.task("default", ["copy-html"], function () {
 gulp.task('test', ['build-tests'], function () {
     return gulp.src('testdist/test/*.js')
         .pipe(jasmine());
+});
+
+gulp.task('watch', function () {
+    gulp.watch(['./src/**/*.ts', './test/**/*.ts'], ['build-tests', 'default']);
 });
