@@ -9,11 +9,12 @@ export class Line{
     private currentDirection:string = 'east';
     private currentAngle:number = 0;
     private degreeMapping: { [id: string] : number[]; } = {};
+    private directionMapping: { [id: string] : number; } = {};
 
-    //45 degree offset for circle of radius 1
+    //Numbers circle of radius 1 and the right angled triangle you can fit in it.
     private root2:number = Math.sqrt(2);
-    private degreeOffset45OnCircle:number = Math.sqrt(2)/2;
-    private degreeOffset45OnCircleLeftOver:number = 1 - Math.sqrt(2)/2;
+    private degreeOffset45OnCircle:number = Math.sqrt(0.5);
+    private degreeOffset45OnCircleLeftOver:number = 1 - Math.sqrt(0.5);
 
 
     constructor(public start: number[] = [0,0],
@@ -30,6 +31,20 @@ export class Line{
             '270':[0,1],
             '315':[1,1]
         };
+
+        this.directionMapping = {
+            'east':0,
+            'north east':45,
+            'north':90,
+            'north west':135,
+            'west':180,
+            'south west':225,
+            'south':270,
+            'south east':315
+        };
+
+        this.currentAngle = this.directionMapping[this.startDirection];
+
     };
 
     updateRoute(route: any[]){
@@ -128,7 +143,7 @@ export class Line{
      * @returns {string}
      */
     turnRight45(){
-        var diameter = this.pathWidth * 2;
+        var diameter = this.pathWidth * 4;
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 1 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
@@ -151,10 +166,10 @@ export class Line{
      * @returns {string}
      */
     turnLeft45(){
-        var diameter = this.pathWidth;
+        var diameter = this.pathWidth * 4 - this.pathWidth;
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 0 ';
-        var degreeOffset = this.degreeOffset45OnCircle * this.pathWidth;
-        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * this.pathWidth;
+        var degreeOffset = this.degreeOffset45OnCircle * diameter;
+        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
         var curveDirection = this.currentAngle;
         if(this.currentAngle % 90 === 0) {
             curveDirection = this.incrementAngle(45, this.currentAngle);

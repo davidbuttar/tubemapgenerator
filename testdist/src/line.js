@@ -1,6 +1,7 @@
 "use strict";
 /**
  * Builds an inner and outer line for a tube line like path.
+ * Author: David Buttar
  */
 var Line = (function () {
     function Line(start, route, startDirection) {
@@ -15,10 +16,11 @@ var Line = (function () {
         this.currentDirection = 'east';
         this.currentAngle = 0;
         this.degreeMapping = {};
-        //45 degree offset for circle of radius 1
+        this.directionMapping = {};
+        //Numbers circle of radius 1 and the right angled triangle you can fit in it.
         this.root2 = Math.sqrt(2);
-        this.degreeOffset45OnCircle = Math.sqrt(2) / 2;
-        this.degreeOffset45OnCircleLeftOver = 1 - Math.sqrt(2) / 2;
+        this.degreeOffset45OnCircle = Math.sqrt(0.5);
+        this.degreeOffset45OnCircleLeftOver = 1 - Math.sqrt(0.5);
         this.degreeMapping = {
             '0': [1, 0],
             '45': [1, -1],
@@ -29,6 +31,17 @@ var Line = (function () {
             '270': [0, 1],
             '315': [1, 1]
         };
+        this.directionMapping = {
+            'east': 0,
+            'north east': 45,
+            'north': 90,
+            'north west': 135,
+            'west': 180,
+            'south west': 225,
+            'south': 270,
+            'south east': 315
+        };
+        this.currentAngle = this.directionMapping[this.startDirection];
     }
     ;
     Line.prototype.updateRoute = function (route) {
@@ -120,7 +133,7 @@ var Line = (function () {
      * @returns {string}
      */
     Line.prototype.turnRight45 = function () {
-        var diameter = this.pathWidth * 2;
+        var diameter = this.pathWidth * 4;
         var returnString = 'a ' + diameter + ' ' + diameter + ' 0 0 1 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
@@ -143,10 +156,10 @@ var Line = (function () {
      * @returns {string}
      */
     Line.prototype.turnLeft45 = function () {
-        var diameter = this.pathWidth;
+        var diameter = this.pathWidth * 4 - this.pathWidth;
         var returnString = 'a ' + diameter + ' ' + diameter + ' 0 0 0 ';
-        var degreeOffset = this.degreeOffset45OnCircle * this.pathWidth;
-        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * this.pathWidth;
+        var degreeOffset = this.degreeOffset45OnCircle * diameter;
+        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
         var curveDirection = this.currentAngle;
         if (this.currentAngle % 90 === 0) {
             curveDirection = this.incrementAngle(45, this.currentAngle);
