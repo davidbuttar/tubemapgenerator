@@ -1,22 +1,20 @@
-import {Handle45DegreeTurns} from "./handle45DegreeTurns";
-
-
+/**
+ * Builds an inner and outer line for a tube line like path.
+ * Author: David Buttar
+ */
 export class Line{
-
-
-    model = new Handle45DegreeTurns();
     public path:string = '';
     public pathWidth:number = 5;
     private scale:number = 10;
     private currentDirection:string = 'east';
     private currentAngle:number = 0;
+    private degreeMapping: { [id: string] : number[]; } = {};
 
     //45 degree offset for circle of radius 1
-    root2:number = Math.sqrt(2);
-    degreeOffset45OnCircle:number = Math.sqrt(2)/2;
-    degreeOffset45OnCircleLeftOver:number = 1 - Math.sqrt(2)/2;
+    private root2:number = Math.sqrt(2);
+    private degreeOffset45OnCircle:number = Math.sqrt(2)/2;
+    private degreeOffset45OnCircleLeftOver:number = 1 - Math.sqrt(2)/2;
 
-    private degreeMapping: { [id: string] : number[]; } = {};
 
     constructor(public start: number[] = [0,0],
                 public route: any[],
@@ -81,8 +79,7 @@ export class Line{
         var returnString:string = 'l ';
         var lineDirection = this.incrementAngle(90, this.currentAngle, true);
         var length = this.pathWidth;
-        var diagonal = lineDirection == 45 || lineDirection == 135 || lineDirection == 225 || lineDirection == 315;
-        if(diagonal){
+        if(lineDirection % 90 !== 0){
             length = this.pathWidth * this.degreeOffset45OnCircle;
         }
         returnString += this.angleToDirectionCoordinates(lineDirection, length);
@@ -99,27 +96,11 @@ export class Line{
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 1 ';
         var curveDirection = this.incrementAngle(45, this.currentAngle, true);
         var endPointOfCircle = this.pathWidth * 2;
-        if(curveDirection === 90 || curveDirection === 180 || curveDirection === 270 || curveDirection === 0){
+        if(curveDirection % 90 === 0){
             endPointOfCircle *= this.root2;
         }
         returnString += this.angleToDirectionCoordinates(curveDirection, endPointOfCircle);
         this.incrementCurrentAngle(90, true);
-        return returnString;
-    }
-
-    /**
-     * Handle a left 45 turn.
-     *
-     * @returns {string}
-     */
-    turnRight45(){
-        console.log('yo');
-        var diameter = this.pathWidth * 2;
-        var returnString:string = 'a '+diameter+' '+diameter+' 0 0 1 ';
-        var y = this.degreeOffset45OnCircle * diameter;
-        var x = this.degreeOffset45OnCircleLeftOver * diameter;
-        returnString += this.degreeMapping[this.currentAngle][0] * y + ' '+ this.degreeMapping[this.currentAngle][1] * x;
-        this.incrementCurrentAngle(45, true);
         return returnString;
     }
 
@@ -132,7 +113,8 @@ export class Line{
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 0 ';
         var curveDirection = this.incrementAngle(45, this.currentAngle);
         var endPointOfCircle = this.pathWidth;
-        if(curveDirection === 90 || curveDirection === 180 || curveDirection === 270 || curveDirection === 0){
+        // Going straight?
+        if(curveDirection % 90 === 0){
             endPointOfCircle *= this.root2;
         }
         returnString += this.angleToDirectionCoordinates(curveDirection, endPointOfCircle);
@@ -145,13 +127,43 @@ export class Line{
      *
      * @returns {string}
      */
+    turnRight45(){
+        var diameter = this.pathWidth * 2;
+        var returnString:string = 'a '+diameter+' '+diameter+' 0 0 1 ';
+        var degreeOffset = this.degreeOffset45OnCircle * diameter;
+        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
+        var curveDirection = this.currentAngle;
+        if(this.currentAngle % 90 === 0) {
+            curveDirection = this.incrementAngle(45, this.currentAngle, true);
+        }
+        if(this.currentAngle === 0 || this.currentAngle === 45 || this.currentAngle === 180 || this.currentAngle === 225){
+            returnString += this.degreeMapping[curveDirection][0] * degreeOffset + ' '+ this.degreeMapping[curveDirection][1] * degreeOffsetLeftOver;
+        }else{
+            returnString += this.degreeMapping[curveDirection][0] * degreeOffsetLeftOver + ' '+ this.degreeMapping[curveDirection][1] * degreeOffset;
+        }
+        this.incrementCurrentAngle(45, true);
+        return returnString;
+    }
+
+    /**
+     * Handle a left 45 turn.
+     *
+     * @returns {string}
+     */
     turnLeft45(){
         var diameter = this.pathWidth;
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 0 ';
-        var y = this.degreeOffset45OnCircle * this.pathWidth;
-        var x = this.degreeOffset45OnCircleLeftOver * this.pathWidth;
-        var curveDirection = this.incrementAngle(45, this.currentAngle);
-        returnString += this.degreeMapping[curveDirection][0] * y + ' '+ this.degreeMapping[curveDirection][1] * x;
+        var degreeOffset = this.degreeOffset45OnCircle * this.pathWidth;
+        var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * this.pathWidth;
+        var curveDirection = this.currentAngle;
+        if(this.currentAngle % 90 === 0) {
+            curveDirection = this.incrementAngle(45, this.currentAngle);
+        }
+        if(this.currentAngle === 0 || this.currentAngle === 135 || this.currentAngle === 180 || this.currentAngle === 315){
+            returnString += this.degreeMapping[curveDirection][0] * degreeOffset + ' '+ this.degreeMapping[curveDirection][1] * degreeOffsetLeftOver;
+        }else{
+            returnString += this.degreeMapping[curveDirection][0] * degreeOffsetLeftOver + ' '+ this.degreeMapping[curveDirection][1] * degreeOffset;
+        }
         this.incrementCurrentAngle(45);
         return returnString;
     }
@@ -161,6 +173,9 @@ export class Line{
      * @returns {string}
      */
     goForward(forwardAmount:number){
+        if(this.currentAngle % 90 !== 0){
+            forwardAmount *= this.degreeOffset45OnCircle;
+        }
         return 'l '+this.angleToDirectionCoordinates(this.currentAngle, forwardAmount * this.scale);
     }
 
@@ -181,6 +196,8 @@ export class Line{
                 instructions.push(this.turnLeft());
             }else if(route.turnLeft45){
                 instructions.push(this.turnLeft45());
+            }else if(route.turnRight45){
+                instructions.push(this.turnRight45());
             }
         }
 
@@ -198,8 +215,9 @@ export class Line{
             }else if(this.route[i].turnLeft){
                 instructions.push(this.turnRight());
             }else if(this.route[i].turnLeft45){
-                console.log('here');
                 instructions.push(this.turnRight45());
+            }else if(this.route[i].turnRight45){
+                instructions.push(this.turnLeft45());
             }
         }
 
@@ -211,14 +229,5 @@ export class Line{
         this.path = "M "+this.start[0]+" "+this.start[1]+" "+this.processRoute()+" Z";
         return this.path;
     }
-
-    /*this.s.path("M "+this.start[0]+" "+this.start[1]+" l 100 0 a 10 10 90 0 1 10 10 l 0 100 "+this.model.degreeArc45(10)+" l 30 30 "+
-     this.model.degreeArc45(10,1)+" l 0 20 a 10 10 90 0 0 10 10 l 20 0 a 10 10 90 0 0 10 -10 l 0 -100 l 5 0 l 0 100 a 15 15 0 0 1 -15 15 l -20 0 a 15 15 0 0 1 -15 -15 l 0 -20"+
-     this.model.degreeArc45(5,0,1)+" l -30 -30"+
-     this.model.degreeArc45(15,1,1)+" l 0 -100 a 5 5 0 0 0 -5 -5 l -100 0 Z" ).attr({
-     fill: "none",
-     stroke: "#ffa500",
-     strokeWidth: 1
-     });*/
 
 }

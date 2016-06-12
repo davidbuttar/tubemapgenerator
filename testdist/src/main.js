@@ -11,7 +11,8 @@ var TubeMapGenerator = (function () {
     function TubeMapGenerator() {
         this.snapInstance = Snap("#svg");
         this.line1 = new line_1.Line([120, 150], [
-            { "forward": 10 }, { "turnLeft45": true }, { "forward": 6 }, { "turnLeft": true }, { "forward": 6 }, { "turnLeft": true }, { "forward": 6 }
+            { "forward": 6 }, { "turnLeft45": true }, { "forward": 6 }, { "turnRight45": true }, { "forward": 6 }, { "turnRight": true },
+            { "forward": 6 }, { "turnRight45": true }, { "forward": 6 }, { "turnLeft45": true }, { "forward": 6 }, { "turnLeft45": true }
         ]);
         this.snapInstance.path(this.line1.getPath()).attr({
             fill: "none",

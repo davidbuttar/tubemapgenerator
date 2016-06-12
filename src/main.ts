@@ -5,7 +5,8 @@ declare var Snap:any;
 class TubeMapGenerator{
     snapInstance = Snap("#svg");
     line1:Line = new Line([120,150], [
-        {"forward":10}, {"turnLeft45":true}, {"forward":6}, {"turnLeft":true},{"forward":6},{"turnLeft":true},{"forward":6}
+        {"forward":6}, {"turnLeft45":true}, {"forward":6}, {"turnRight45":true}, {"forward":6}, {"turnRight":true},
+        {"forward":6}, {"turnRight45":true}, {"forward":6}, {"turnLeft45":true}, {"forward":6},{"turnLeft45":true}
     ]);
 
     /*line2:Line = new Line([120,150], [
