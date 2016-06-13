@@ -4,12 +4,14 @@
  * Author: David Buttar
  */
 var Line = (function () {
-    function Line(start, route, startDirection) {
+    function Line(start, route, startDirection, turn45Default) {
         if (start === void 0) { start = [0, 0]; }
         if (startDirection === void 0) { startDirection = 'east'; }
+        if (turn45Default === void 0) { turn45Default = 20; }
         this.start = start;
         this.route = route;
         this.startDirection = startDirection;
+        this.turn45Default = turn45Default;
         this.path = '';
         this.pathWidth = 5;
         this.scale = 10;
@@ -133,7 +135,7 @@ var Line = (function () {
      * @returns {string}
      */
     Line.prototype.turnRight45 = function () {
-        var diameter = this.pathWidth * 4;
+        var diameter = this.turn45Default;
         var returnString = 'a ' + diameter + ' ' + diameter + ' 0 0 1 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
@@ -156,7 +158,7 @@ var Line = (function () {
      * @returns {string}
      */
     Line.prototype.turnLeft45 = function () {
-        var diameter = this.pathWidth * 4 - this.pathWidth;
+        var diameter = this.turn45Default - this.pathWidth;
         var returnString = 'a ' + diameter + ' ' + diameter + ' 0 0 0 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;

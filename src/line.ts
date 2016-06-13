@@ -19,7 +19,8 @@ export class Line{
 
     constructor(public start: number[] = [0,0],
                 public route: any[],
-                public startDirection: string = 'east'
+                public startDirection: string = 'east',
+                public turn45Default: number = 20
                 ){
         this.degreeMapping = {
             '0':[1,0],
@@ -87,11 +88,29 @@ export class Line{
         return this.degreeMapping[angle][0]*scale + ' ' + this.degreeMapping[angle][1]*scale;
     }
 
+    addTaperedEnd(){
+        var returnString:string = '';
+        var turns = [{clockwise:true,length:2},{clockwise:false,length:3},{clockwise:false,length:9},
+            {clockwise:false,length:3},{clockwise:false,length:2}];
+        for(var i = 0, ii = turns.length; i<ii; i++){
+            var length = turns[i].length;
+            this.incrementCurrentAngle(90, !turns[i].clockwise);
+            if(this.currentAngle % 90 !== 0){
+                length = turns[i].length * this.degreeOffset45OnCircle;
+            }
+            returnString += 'l '+this.angleToDirectionCoordinates(this.currentAngle, length);
+        }
+        this.incrementCurrentAngle(90);
+        return returnString;
+    }
+
     /**
      * Close off the tube if applicable
      */
     close(){
-        var returnString:string = 'l ';
+
+        return this.addTaperedEnd();
+        /*var returnString:string = 'l ';
         var lineDirection = this.incrementAngle(90, this.currentAngle, true);
         var length = this.pathWidth;
         if(lineDirection % 90 !== 0){
@@ -99,7 +118,7 @@ export class Line{
         }
         returnString += this.angleToDirectionCoordinates(lineDirection, length);
         this.incrementCurrentAngle(180);
-        return returnString;
+        return returnString;*/
     }
 
     /**
@@ -143,7 +162,7 @@ export class Line{
      * @returns {string}
      */
     turnRight45(){
-        var diameter = this.pathWidth * 4;
+        var diameter = this.turn45Default;
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 1 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
@@ -166,7 +185,7 @@ export class Line{
      * @returns {string}
      */
     turnLeft45(){
-        var diameter = this.pathWidth * 4 - this.pathWidth;
+        var diameter = this.turn45Default - this.pathWidth;
         var returnString:string = 'a '+diameter+' '+diameter+' 0 0 0 ';
         var degreeOffset = this.degreeOffset45OnCircle * diameter;
         var degreeOffsetLeftOver = this.degreeOffset45OnCircleLeftOver * diameter;
@@ -235,6 +254,8 @@ export class Line{
                 instructions.push(this.turnLeft45());
             }
         }
+
+        instructions.push(this.addTaperedEnd());
 
         return instructions.join(' ');
 
