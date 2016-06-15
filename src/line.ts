@@ -89,28 +89,29 @@ export class Line{
     }
 
     addTaperedEnd(){
-        var returnString:string = '';
-        var turns = [{clockwise:true,length:2},{clockwise:false,length:3},{clockwise:false,length:9},
-            {clockwise:false,length:3},{clockwise:false,length:2}];
+        var returnPath:string[] = [];
+        var turns = [{clockwise:true,length:3.25},{clockwise:false,length:3.25},{clockwise:false,length:11.5},
+            {clockwise:false,length:3.25},{clockwise:false,length:3.25}];
         for(var i = 0, ii = turns.length; i<ii; i++){
             var length = turns[i].length;
             this.incrementCurrentAngle(90, !turns[i].clockwise);
             if(this.currentAngle % 90 !== 0){
                 length = turns[i].length * this.degreeOffset45OnCircle;
             }
-            returnString += 'l '+this.angleToDirectionCoordinates(this.currentAngle, length);
+            returnPath.push('l '+this.angleToDirectionCoordinates(this.currentAngle, length));
         }
         this.incrementCurrentAngle(90);
-        return returnString;
+        return returnPath.join(' ');
     }
 
     /**
      * Close off the tube if applicable
      */
-    close(){
-
-        return this.addTaperedEnd();
-        /*var returnString:string = 'l ';
+    close(tapered:boolean){
+        if(tapered) {
+            return this.addTaperedEnd();
+        }
+        var returnString:string = 'l ';
         var lineDirection = this.incrementAngle(90, this.currentAngle, true);
         var length = this.pathWidth;
         if(lineDirection % 90 !== 0){
@@ -118,7 +119,7 @@ export class Line{
         }
         returnString += this.angleToDirectionCoordinates(lineDirection, length);
         this.incrementCurrentAngle(180);
-        return returnString;*/
+        return returnString;
     }
 
     /**
@@ -236,7 +237,7 @@ export class Line{
         }
 
         // close end
-        instructions.push(this.close());
+        instructions.push(this.close(this.route[0].taperedStart));
 
         var numberOfRoutes = this.route.length;
 
@@ -255,7 +256,9 @@ export class Line{
             }
         }
 
-        instructions.push(this.addTaperedEnd());
+        if(this.route[numberOfRoutes-1].taperedEnd) {
+            instructions.push(this.addTaperedEnd());
+        }
 
         return instructions.join(' ');
 

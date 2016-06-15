@@ -82,10 +82,28 @@ var Line = (function () {
     Line.prototype.angleToDirectionCoordinates = function (angle, scale) {
         return this.degreeMapping[angle][0] * scale + ' ' + this.degreeMapping[angle][1] * scale;
     };
+    Line.prototype.addTaperedEnd = function () {
+        var returnPath = [];
+        var turns = [{ clockwise: true, length: 3.25 }, { clockwise: false, length: 3.25 }, { clockwise: false, length: 11.5 },
+            { clockwise: false, length: 3.25 }, { clockwise: false, length: 3.25 }];
+        for (var i = 0, ii = turns.length; i < ii; i++) {
+            var length = turns[i].length;
+            this.incrementCurrentAngle(90, !turns[i].clockwise);
+            if (this.currentAngle % 90 !== 0) {
+                length = turns[i].length * this.degreeOffset45OnCircle;
+            }
+            returnPath.push('l ' + this.angleToDirectionCoordinates(this.currentAngle, length));
+        }
+        this.incrementCurrentAngle(90);
+        return returnPath.join(' ');
+    };
     /**
      * Close off the tube if applicable
      */
-    Line.prototype.close = function () {
+    Line.prototype.close = function (tapered) {
+        if (tapered) {
+            return this.addTaperedEnd();
+        }
         var returnString = 'l ';
         var lineDirection = this.incrementAngle(90, this.currentAngle, true);
         var length = this.pathWidth;
@@ -211,7 +229,7 @@ var Line = (function () {
             }
         }
         // close end
-        instructions.push(this.close());
+        instructions.push(this.close(this.route[0].taperedStart));
         var numberOfRoutes = this.route.length;
         // Inward bound
         for (var i = numberOfRoutes - 1; i >= 0; i--) {
@@ -230,6 +248,9 @@ var Line = (function () {
             else if (this.route[i].turnRight45) {
                 instructions.push(this.turnLeft45());
             }
+        }
+        if (this.route[numberOfRoutes - 1].taperedEnd) {
+            instructions.push(this.addTaperedEnd());
         }
         return instructions.join(' ');
     };

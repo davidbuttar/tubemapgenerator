@@ -67,8 +67,8 @@ describe('1st tests', () => {
     });
 
     it('should be able to have a tapered end', () => {
-        var lineInst = new Line([100,100], [{"forward":6}]);
-        expect(lineInst.getPath()).toEqual('M 100 100 l 100 0 l 0 5 l -100 0 Z');
+        var lineInst = new Line([100,100], [{"forward":6,taperedStart:true,taperedEnd:true}]);
+        expect(lineInst.getPath()).toEqual('M 100 100 l 60 0 l 0 -3.25 l 3.25 0 l 0 11.5 l -3.25 0 l 0 -3.25 l -60 0 l 0 3.25 l -3.25 0 l 0 -11.5 l 3.25 0 l 0 3.25 Z');
     });
 
 });

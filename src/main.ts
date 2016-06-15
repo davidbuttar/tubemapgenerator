@@ -6,11 +6,11 @@ class TubeMapGenerator{
     snapInstance = Snap("#svg");
 
     line1:Line = new Line([100,100], [
-        {"forward":6}
+        {"forward":6,taperedEnd:true}
     ]);
 
     line2:Line = new Line([1000, 30], [
-        {"forward":5}, {"turnLeft45":true}, {"forward":18}, {"turnRight45":true},{"forward":13},{"turnRight45":true},{"forward":9},
+        {"forward":5, taperedStart:true}, {"turnLeft45":true}, {"forward":18}, {"turnRight45":true},{"forward":13},{"turnRight45":true},{"forward":9},
         {"turnLeft45":true},{"forward":13},{"turnRight45":true},{"forward":13},{"turnRight45":true},{"forward":5},{"turnLeft45":true},
         {"forward":40},{"turnLeft":true},{"forward":20}
     ], 'south west');
